@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Местные достопримечательности</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+
+        #search-container {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        #search-input {
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            width: 300px;
+            margin-right: 10px;
+        }
+
+        #search-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #search-button:hover {
+            background-color: #0056b3;
+        }
+
+        #map {
+            height: 70%;
+            width: 80%;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="search-container">
+        <input type="text" id="search-input" placeholder="Введите адрес или местоположение">
+        <button id="search-button">Поиск</button>
+    </div>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet"></script>
+    <script>
+
+        const map = L.map('map').setView([51.505, -0.09], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        document.getElementById('search-button').addEventListener('click', async function () {
+            const address = document.getElementById('search-input').value;
+            if (address.trim() === '') {
+                alert('Введите адрес!');
+                return;
+            }
+
+            const geocodingUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+            try {
+                const response = await fetch(geocodingUrl);
+                const data = await response.json();
+                if (data.length === 0) {
+                    alert('Местоположение не найдено!');
+                    return;
+                }
+
+                const { lat, lon } = data[0];
+                map.setView([lat, lon], 14);
+
+                const attractionsUrl = `https://overpass-api.de/api/interpreter?data=[out:json];(node["tourism"="museum"](around:2000,${lat},${lon});node["amenity"="theatre"](around:2000,${lat},${lon}););out;`;
+                const attractionsResponse = await fetch(attractionsUrl);
+                const attractionsData = await attractionsResponse.json();
+
+                map.eachLayer(layer => {
+                    if (!!layer.toGeoJSON) map.removeLayer(layer);
+                });
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+
+                attractionsData.elements.forEach(attraction => {
+                    const marker = L.marker([attraction.lat, attraction.lon]).addTo(map);
+                    marker.bindPopup(`<strong>${attraction.tags.name || 'Неизвестное место'}</strong><br>${attraction.tags.tourism === 'museum' ? 'Музей' : 'Театр'}`);
+                });
+            } catch (error) {
+                console.error("Ошибка:", error);
+                alert('Произошла ошибка при получении данных.');
+            }
+        });
+    </script>
+</body>
+</html>
