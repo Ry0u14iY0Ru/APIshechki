@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unsplash Image Gallery</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    #search-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      width: 100%;
+      max-width: 300px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      border-radius: 20px;
+      border: none;
+      background-color: blue;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: darkblue;
+    }
+
+    #gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .image-card {
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+    }
+
+    .image-card img {
+      width: 100%;
+      height: auto;
+    }
+
+    .image-card p {
+      padding: 10px;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Unsplash Image Gallery</h1>
+  <div id="search-container">
+    <input type="text" id="search" placeholder="Enter keyword...">
+    <button onclick="searchImages()">Search</button>
+  </div>
+  <div id="gallery"></div>
+
+  <script>
+    const ACCESS_KEY = 'k8eTXrLgd8TxUFz04BoqOEoY-unSDWxCHMWrS5d3AUs';
+
+    async function searchImages() {
+      const query = document.getElementById('search').value;
+      if (!query) return;
+
+      const url = `https://api.unsplash.com/search/photos?query=${query}&client_id=${ACCESS_KEY}`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        document.getElementById('gallery').innerHTML = '';
+
+        if (!data.results.length) {
+          document.getElementById('gallery').innerHTML = '<p>No results found.</p>';
+          return;
+        }
+
+        data.results.forEach(photo => {
+          const imageCard = `
+            <div class="image-card">
+              <img src="${photo.urls.small}" alt="${photo.alt_description}">
+              <p>Photo by <a href="${photo.user.links.html}" target="_blank">${photo.user.name}</a></p>
+            </div>
+          `;
+          document.getElementById('gallery').innerHTML += imageCard;
+        });
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        document.getElementById('gallery').innerHTML = '<p>Failed to fetch data. Try again later.</p>';
+      }
+    }
+  </script>
+</body>
+</html>
