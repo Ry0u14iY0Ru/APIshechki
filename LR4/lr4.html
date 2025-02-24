@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анализ текстов</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container">
+    <h1 class="mt-5">Анализ текста</h1>
+    <form id="text-form">
+        <div class="form-group">
+            <label for="inputText">Введите текст:</label>
+            <textarea class="form-control" id="inputText" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Анализировать</button>
+    </form>
+    <div id="results" class="mt-4"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="lr4.js"></script>
+</body>
+</html>
