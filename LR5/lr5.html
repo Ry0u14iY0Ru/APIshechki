@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Крипто-график</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Изменения курса криптовалюты</h1>
+        <div class="form-group">
+            <label for="currency">Выберите криптовалюту:</label>
+            <select id="currency" class="form-control">
+                <option value="bitcoin">Bitcoin</option>
+                <option value="ethereum">Ethereum</option>
+                <option value="ripple">Ripple</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="days">Выберите период (дней):</label>
+            <input type="number" id="days" class="form-control" min="1" max="30" value="7">
+        </div>
+        <button id="fetchData" class="btn btn-primary">Показать график</button>
+        <canvas id="myChart" class="mt-4"></canvas>
+    </div>
+
+    <script src="lr5.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.js"></script>
+</body>
+</html>
